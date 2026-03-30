@@ -1,4 +1,4 @@
-const PRODUCT_ID = '2GDt7DbZR1';
+const PRODUCT_ID = '2GDT7DbZR1';
 const DEVICE_NAME = 'creal_qwq';
 const ACCESS_KEY = 'CbeZW6PdYaP9B9XTTS9h1f870fWDN2HN0elLiXfVD5M=';
 
