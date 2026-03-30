@@ -7,7 +7,7 @@ const ONENET_API_URL = 'https://open.iot.10086.cn/iotstudio/device/thing/propert
 function generateToken() {
     const version = '2018-10-31';
     const res = `products/${PRODUCT_ID}/devices/${DEVICE_NAME}`;
-    const et = Math.floor(Date.now() / 1000) + 3600;
+    const et = Math.floor(Date.now() / 1000) + 3600; // 可改为 2000000000 排除时效
     const method = 'sha1';
     const stringToSign = `${et}\n${method}\n${res}\n${version}`;
     const crypto = require('crypto');
@@ -18,6 +18,7 @@ function generateToken() {
 }
 
 module.exports = async (req, res) => {
+    // 设置 CORS 头
     res.setHeader('Access-Control-Allow-Origin', '*');
     if (req.method === 'OPTIONS') {
         res.status(200).end();
@@ -33,9 +34,10 @@ module.exports = async (req, res) => {
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        // 直接返回 OneNET 的原始响应（状态码、headers、body 均透传）
+        // 直接返回 OneNET 的原始响应（状态码、头、正文）
         const text = await response.text();
-        res.status(response.status).set(response.headers).send(text);
+        res.status(response.status).setHeader('Content-Type', response.headers.get('content-type'));
+        res.send(text);
     } catch (error) {
         res.status(500).send(`代理内部错误: ${error.message}`);
     }
