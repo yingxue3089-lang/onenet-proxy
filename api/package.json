@@ -1,0 +1,6 @@
+{
+    "name": "onenet-proxy",
+    "version": "1.0.0",
+    "description": "OneNET API Proxy",
+    "main": "api/onenet.js"
+}
