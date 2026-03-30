@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
             status: response.status,
             statusText: response.statusText,
             headers: Object.fromEntries(response.headers.entries()),
-            body: text.substring(0, 1000) // 限制长度，避免过大
+            body: text   // 不再截断，显示完整内容
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
