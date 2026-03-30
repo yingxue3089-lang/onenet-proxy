@@ -19,7 +19,6 @@ function generateToken() {
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     if (req.method === 'OPTIONS') {
         res.status(200).end();
         return;
@@ -31,27 +30,20 @@ module.exports = async (req, res) => {
     try {
         const token = generateToken();
         const url = `${ONENET_API_URL}?productId=${PRODUCT_ID}&deviceName=${DEVICE_NAME}`;
-        console.log('请求URL:', url);
-        console.log('Token:', token);
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        const text = await response.text(); // 获取原始文本
-        console.log('OneNET返回原始内容:', text);
-        // 返回原始文本，方便查看
-        res.status(200).json({ 
-            debug: true, 
+        
+        // 直接返回原始文本（HTML 或 JSON），方便查看错误
+        const text = await response.text();
+        res.status(200).json({
+            debug: true,
             status: response.status,
             statusText: response.statusText,
             headers: Object.fromEntries(response.headers.entries()),
-            body: text.substring(0, 2000) // 截取前2000字符防止过长
+            body: text.substring(0, 1000) // 限制长度，避免过大
         });
     } catch (error) {
-        console.error('代理内部错误:', error);
-        res.status(500).json({
-            error: '代理内部错误',
-            message: error.message,
-            stack: error.stack
-        });
+        res.status(500).json({ error: error.message });
     }
 };
