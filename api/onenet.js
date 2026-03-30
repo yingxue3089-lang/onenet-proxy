@@ -31,14 +31,23 @@ module.exports = async (req, res) => {
     try {
         const token = generateToken();
         const url = `${ONENET_API_URL}?productId=${PRODUCT_ID}&deviceName=${DEVICE_NAME}`;
+        console.log('请求URL:', url);
+        console.log('Token:', token);
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        const data = await response.json();
-        // 直接返回 OneNET 的原始响应，不再包装成自定义错误
-        res.status(200).json(data);
+        const text = await response.text(); // 获取原始文本
+        console.log('OneNET返回原始内容:', text);
+        // 返回原始文本，方便查看
+        res.status(200).json({ 
+            debug: true, 
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries()),
+            body: text.substring(0, 2000) // 截取前2000字符防止过长
+        });
     } catch (error) {
-        // 如果 fetch 本身出错（网络问题等），则返回详细错误
+        console.error('代理内部错误:', error);
         res.status(500).json({
             error: '代理内部错误',
             message: error.message,
