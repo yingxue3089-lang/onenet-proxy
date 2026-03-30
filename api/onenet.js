@@ -2,12 +2,12 @@ const PRODUCT_ID = '2GDT7DbZR1';
 const DEVICE_NAME = 'creal_qwq';
 const ACCESS_KEY = 'CbeZW6PdYaP9B9XTTS9h1f870fWDN2HN0elLiXfVD5M=';
 
-const ONENET_API_URL = 'https://open.iot.10086.cn/studio/device/thing/property/query';
+const ONENET_API_URL = 'https://open.iot.10086.cn/iotstudio/device/thing/property/query';
 
 function generateToken() {
     const version = '2018-10-31';
     const res = `products/${PRODUCT_ID}/devices/${DEVICE_NAME}`;
-    const et = Math.floor(Date.now() / 1000) + 3600;
+    const et = 2000000000;   // 大约 2033 年，永不过期
     const method = 'sha1';
     const stringToSign = `${et}\n${method}\n${res}\n${version}`;
     const crypto = require('crypto');
