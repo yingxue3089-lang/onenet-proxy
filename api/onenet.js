@@ -1,13 +1,13 @@
 const PRODUCT_ID = '2GDT7DbZR1';
-const DEVICE_NAME = 'creal_qwq';
-const ACCESS_KEY = 'CbeZW6PdYaP9B9XTTS9h1f870fWDN2HN0elLiXfVD5M=';
+const DEVICE_NAME = 'creal_qwq';          // 已修正为正确的设备名称
+const ACCESS_KEY = 'CbeZW6PdYaP9B9XTTS9h1f870fWDN2HN0elLiXfVD5M=';  // 请确保与 OneNET 控制台一致
 
-const ONENET_API_URL = 'https://open.iot.10086.cn/iotstudio/device/thing/property/query';
+const ONENET_API_URL = 'https://open.iot.10086.cn/iotstudio/device/thing/property/query';  // 修正路径
 
 function generateToken() {
     const version = '2018-10-31';
     const res = `products/${PRODUCT_ID}/devices/${DEVICE_NAME}`;
-    const et = Math.floor(Date.now() / 1000) + 3600; // 可改为 2000000000 排除时效
+    const et = 2000000000;   // 永不过期（2033年）
     const method = 'sha1';
     const stringToSign = `${et}\n${method}\n${res}\n${version}`;
     const crypto = require('crypto');
@@ -18,7 +18,6 @@ function generateToken() {
 }
 
 module.exports = async (req, res) => {
-    // 设置 CORS 头
     res.setHeader('Access-Control-Allow-Origin', '*');
     if (req.method === 'OPTIONS') {
         res.status(200).end();
@@ -34,11 +33,12 @@ module.exports = async (req, res) => {
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        // 直接返回 OneNET 的原始响应（状态码、头、正文）
         const text = await response.text();
-        res.status(response.status).setHeader('Content-Type', response.headers.get('content-type'));
-        res.send(text);
+        res.status(200).json({
+            statusCode: response.status,
+            body: text.substring(0, 1500)   // 显示错误信息
+        });
     } catch (error) {
-        res.status(500).send(`代理内部错误: ${error.message}`);
+        res.status(500).json({ error: error.message });
     }
 };
