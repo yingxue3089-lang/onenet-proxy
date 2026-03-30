@@ -1,4 +1,3 @@
-// 你的 OneNET 配置
 const PRODUCT_ID = '2GDt7DbZR1';
 const DEVICE_NAME = 'creal_qwq';
 const ACCESS_KEY = 'CbeZW6PdYaP9B9XTTS9h1f870fWDN2HN0elLiXfVD5M=';
@@ -36,9 +35,14 @@ module.exports = async (req, res) => {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
+        // 直接返回 OneNET 的原始响应，不再包装成自定义错误
         res.status(200).json(data);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch data from OneNET' });
+        // 如果 fetch 本身出错（网络问题等），则返回详细错误
+        res.status(500).json({
+            error: '代理内部错误',
+            message: error.message,
+            stack: error.stack
+        });
     }
 };
